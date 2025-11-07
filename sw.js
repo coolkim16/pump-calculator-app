@@ -8,9 +8,9 @@ const URLS_TO_CACHE = [
 './npsha.html',
 './cheonsei_logo.png',
 './manifest.json',
-'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
+'https://www.google.com/search?q=https://cdn.tailwindcss.com', // 수정됨
+'https://www.google.com/search?q=https://fonts.googleapis.com/css2%3Ffamily%3DNoto%2BSans%2BKR:wght%40400%3B700%26display%3Dswap', // 수정됨
+'https://www.google.com/search?q=https://fonts.googleapis.com/css2%3Ffamily%3DInter:wght%40400%3B500%3B600%3B700%26display%3Dswap' // 수정됨
 ];
 
 // 1. 서비스 워커 설치
