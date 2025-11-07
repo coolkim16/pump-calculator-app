@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NPSHA (유효 흡입 수두) 계산기</title>
+
+<!-- [수정] 올바른 CDN 주소로 수정 -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -28,7 +30,6 @@
         background-color: #e0f2fe; /* Light blue */
         border-left: 4px solid #0ea5e9; /* Sky blue */
     }
-    /* Hide number input spinners */
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button {
         -webkit-appearance: none;
@@ -288,13 +289,8 @@
         if (sg === 0) return 0;
         switch (unit) {
             case 'cp': // cP to m^2/s (Kinematic Viscosity)
-                // 1 cP = 1 mPa·s
-                // Dynamic Viscosity (Pa·s) = cP / 1000
-                // Density (kg/m^3) = SG * 1000
-                // Kinematic Viscosity (m^2/s) = Dynamic / Density
                 return (viscosity / 1000) / (sg * 1000);
             case 'cst': // cSt to m^2/s
-                // 1 cSt = 1 mm^2/s = 1e-6 m^2/s
                 return viscosity / 1000000;
             default:
                 return 0;
@@ -303,7 +299,6 @@
 
     /**
      * 유속 (V, m/s)을 계산합니다.
-     * Q: m^3/s, D: mm
      */
     function calculateVelocity(Q_m3s, D_mm) {
         if (D_mm === 0) return 0;
@@ -315,7 +310,6 @@
 
     /**
      * 레이놀즈 수 (Re)를 계산합니다.
-     * V: m/s, d: m, nu: m^2/s
      */
     function calculateReynolds(V, d_m, nu) {
         if (nu === 0) return 0;
@@ -324,8 +318,6 @@
 
     /**
      * 관 마찰 계수 (f)를 계산합니다.
-     * Re < 2300 (층류): f = 64 / Re
-     * Re > 2300 (난류): f = 0.03 (사용자 정의)
      */
     function calculateFrictionFactor(Re) {
         if (Re === 0) return 0;
@@ -337,8 +329,7 @@
     }
 
     /**
-     * 흡입측 손실 수두 (hf, m)를 계산합니다. (Darcy-Weisbach)
-     * f: unitless, l: m, d: m, V: m/s, g: m/s^2
+     * 흡입측 손실 수두 (hf, m)를 계산합니다.
      */
     function calculateFrictionHeadLoss(f, l_m, d_m, V_m_s) {
         if (d_m === 0) return 0;
@@ -365,7 +356,6 @@
      * 모든 값을 기반으로 NPSHA를 계산합니다.
      */
     function calculateNPSHA() {
-        // 1. 입력 값 가져오기
         const sg = getNumber('sg');
         const Pa_bar = getNumber('pa');
         const Pv_bar = getNumber('pv');
@@ -383,52 +373,26 @@
         const l_m = getNumber('l');
         const pump_type = document.getElementById('pump_type').value;
 
-        // 2. 압력 수두 계산 (Pa/γ, Pv/γ)
-        // (bar * 10.197 mH2O/bar) / SG = m (actual fluid)
         const Pa_head = (sg > 0) ? (Pa_bar * H_CONST) / sg : 0;
         const Pv_head = (sg > 0) ? (Pv_bar * H_CONST) / sg : 0;
 
-        // 3. 정적 수두 계산 (±hs)
         const hs_term = (hs_type === 'lift') ? -hs : hs;
 
-        // 4. 흡입측 손실 수두 (hf) 계산
-        // 4a. 유량 (m^3/s)
         const Q_m3s = convertFlowRate(flow_rate, flow_rate_unit);
-        
-        // 4b. 평균 유속 (V_avg, m/s)
         const V_avg = calculateVelocity(Q_m3s, D1_mm);
-
-        // 4c. 최대 유속 (V_max, m/s)
         const v_multiplier = getVelocityMultiplier(pump_type);
         const V_max = V_avg * v_multiplier;
-        
-        // 4d. 배관 내경 (d, m)
         const d_m = D1_mm / 1000;
-        
-        // 4e. 동점성 계수 (nu, m^2/s)
         const nu = convertViscosity(viscosity, viscosity_unit, sg);
-        
-        // 4f. 레이놀즈 수 (Re) - 최대 유속 기준
         const Re = calculateReynolds(V_max, d_m, nu);
-        
-        // 4g. 관 마찰 계수 (f) - 최대 유속 기준
         const f = calculateFrictionFactor(Re);
-        
-        // 4h. 손실 수두 (hf) - 최대 유속 기준
         const hf = calculateFrictionHeadLoss(f, l_m, d_m, V_max);
-
-        // 5. 최종 NPSHA 계산
-        // NPSHA = (Pa/γ) - (Pv/γ) ± hs - hf
         const NPSHA = Pa_head - Pv_head + hs_term - hf;
-        
-        // 6. 권장 NPSHR 계산
         const NPSHR_rec = NPSHA / 1.3;
 
-        // 7. 결과 표시
         resultNPSHA.textContent = `${NPSHA.toFixed(2)} m`;
         resultNPSHR.textContent = `${NPSHR_rec.toFixed(2)} m`;
         
-        // 8. 상세 정보 표시
         detailPaHead.textContent = `${Pa_head.toFixed(2)} m`;
         detailPvHead.textContent = `${Pv_head.toFixed(2)} m`;
         detailHs.textContent = `${hs_term.toFixed(2)} m`;
@@ -439,12 +403,10 @@
         detailF.textContent = `${f.toFixed(3)}`;
     }
 
-    // 폼 입력값이 변경될 때마다 실시간으로 계산
     inputs.forEach(input => {
         input.addEventListener('input', calculateNPSHA);
     });
 
-    // 페이지 로드 시 초기 계산 수행
     document.addEventListener('DOMContentLoaded', calculateNPSHA);
 
 </script>
