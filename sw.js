@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pump-calculator-v2'; // 캐시 버전을 v2로 변경
+const CACHE_NAME = 'pump-calculator-v3'; // 캐시 버전을 v3로 강제 업데이트
 
 // [수정] 캐시할 목록의 CDN 주소를 올바른 실제 주소로 수정
 const URLS_TO_CACHE = [
@@ -15,6 +15,7 @@ const URLS_TO_CACHE = [
 
 // 1. 서비스 워커 설치
 self.addEventListener('install', event => {
+self.skipWaiting(); // 즉시 활성화
 event.waitUntil(
 caches.open(CACHE_NAME)
 .then(cache => {
@@ -26,58 +27,36 @@ console.error('캐시 저장 실패:', err);
 );
 });
 
-// 2. 요청 가로채기 (Fetch) - 오프라인 우선 전략
+// 2. 요청 가로채기 (Fetch) - 네트워크 우선, 실패 시 캐시
 self.addEventListener('fetch', event => {
 event.respondWith(
-caches.match(event.request)
-.then(response => {
-// 캐시에 응답이 있으면 그것을 반환
+fetch(event.request).catch(() => {
+// 네트워크 요청이 실패하면 (오프라인)
+console.log('네트워크 요청 실패. 캐시에서 찾습니다: ', event.request.url);
+return caches.match(event.request).then(response => {
 if (response) {
-return response;
+return response; // 캐시에서 반환
 }
-
-    // 캐시에 없으면 네트워크로 요청
-    return fetch(event.request).then(
-      (networkResponse) => {
-        // 유효하지 않은 응답은 캐시하지 않음
-        if (!networkResponse || networkResponse.status !== 200) {
-             return networkResponse;
-        }
-        
-        // 응답을 복제 (캐시와 브라우저가 각각 사용)
-        const responseToCache = networkResponse.clone();
-
-        caches.open(CACHE_NAME)
-          .then(cache => {
-              if(event.request.method !== 'PUT') {
-                cache.put(event.request, responseToCache);
-              }
-          });
-        
-        return networkResponse;
-      }
-    ).catch(() => {
-      console.log('네트워크 요청 실패 및 캐시에 없음');
-    });
-  })
-
-
+// 캐시에도 없으면 아무것도 반환하지 않음 (오류)
+});
+})
 );
 });
 
-// 3. 오래된 캐시 정리 (Activate) - v1 캐시 삭제
+// 3. 오래된 캐시 정리 (Activate) - v1, v2 캐시 삭제
 self.addEventListener('activate', event => {
-const cacheWhitelist = [CACHE_NAME]; // v2만 허용
+const cacheWhitelist = [CACHE_NAME]; // v3만 허용
 event.waitUntil(
 caches.keys().then(cacheNames => {
 return Promise.all(
 cacheNames.map(cacheName => {
 if (cacheWhitelist.indexOf(cacheName) === -1) {
-// 이 캐시 이름(v1)이 화이트리스트에 없으면 삭제
+// 이 캐시 이름(v1, v2)이 화이트리스트에 없으면 삭제
+console.log('오래된 캐시 삭제: ', cacheName);
 return caches.delete(cacheName);
 }
 })
 );
-})
+}).then(() => self.clients.claim()) // 활성화 즉시 클라이언트 제어
 );
 });
