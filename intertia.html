@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>관성저항 (마찰손실 수두) 계산기</title>
-<!-- [수정] Tailwind CSS 및 폰트 링크를 직접 CDN 주소로 수정 -->
+<!-- [수정] Tailwind CSS 및 폰트 링크를 올바른 CDN 주소로 수정 -->
 <script src="https://www.google.com/search?q=https://cdn.tailwindcss.com"></script>
 <link href="https://www.google.com/search?q=https://fonts.googleapis.com/css2%3Ffamily%3DInter:wght%40400%3B600%3B700%26display%3Dswap" rel="stylesheet">
 <style>
@@ -44,7 +44,7 @@ input[type="number"] { -moz-appearance: textfield; }
                     <div class="input-group">
                         <label for="C" class="block text-sm font-medium text-gray-700 mb-1">유량 단위 (C)</label>
                         <select id="C" name="C" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1">ℓ/min</option>
+                            <option value="1" selected>ℓ/min</option>
                             <option value="2">㎥/h</option>
                             <option value="3">㎥/min</option>
                         </select>
@@ -60,7 +60,7 @@ input[type="number"] { -moz-appearance: textfield; }
                     <div class="input-group">
                         <label for="AA" class="block text-sm font-medium text-gray-700 mb-1">점도 단위 (AA)</label>
                         <select id="AA" name="AA" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1">cP (Centipoise)</option>
+                            <option value="1" selected>cP (Centipoise)</option>
                             <option value="2">cSt (Centistokes)</option>
                         </select>
                     </div>
@@ -77,7 +77,7 @@ input[type="number"] { -moz-appearance: textfield; }
                             <option value="10">10 mm</option>
                             <option value="15">15 mm</option>
                             <option value="20">20 mm</option>
-                            <option value="25">25 mm</option>
+                            <option value="25" selected>25 mm</option>
                             <option value="32">32 mm</option>
                             <option value="40">40 mm</option>
                             <option value="50">50 mm</option>
@@ -103,7 +103,7 @@ input[type="number"] { -moz-appearance: textfield; }
                     <div class="input-group">
                         <label for="KK" class="block text-sm font-medium text-gray-700 mb-1">주요 펌프 타입 (KK)</label>
                         <select id="KK" name="KK" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1">모노펌프</option>
+                            <option value="1" selected>모노펌프</option>
                             <option value="2">원심펌프</option>
                             <option value="3">정량펌프</option>
                         </select>
@@ -111,7 +111,7 @@ input[type="number"] { -moz-appearance: textfield; }
                     <div class="input-group mt-2">
                         <label for="NN" class="block text-sm font-medium text-gray-700 mb-1">정량펌프 세부 타입 (NN)</label>
                         <select id="NN" name="NN" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1">싱글헤드</option>
+                            <option value="1" selected>싱글헤드</option>
                             <option value="2">더블헤드</option>
                             <option value="3">트리플헤드</option>
                             <option value="4">무맥동정량펌프</option>
@@ -293,7 +293,10 @@ input[type="number"] { -moz-appearance: textfield; }
             // K6: D1 >= 50
             if (K_data === K_VALUES.K6 && D1_num >= 50) return K_VALUES.K6.default;
             
-            // 4. Case에 해당하지 않는 경우 0 또는 기본값 반환 (원천 코드에서는 0이 되지 않음)
+            // 4. Case에 해당하지 않는 경우 0 또는 기본값 반환
+            // K_data.default는 범위 밖의 값을 처리
+            if(K_data.default) return K_data.default;
+            
             return 0; // 안전을 위해 0 반환
         }
 
@@ -417,15 +420,19 @@ input[type="number"] { -moz-appearance: textfield; }
             // 10. 정량펌프 부가 손실 수두 HK 계산 (원천 코드 로직 반영)
             let HK = 0;
             if (KK === 3 && NNN > 0) {
-                // HK = 2 * (DK / D1)^2 * (SK / 60)^2 * SLK * L7 * SG * NNN
-                const term1 = 2 * Math.pow(DK / D1, 2);
-                const term2 = Math.pow(SK / 60, 2);
-                const term3 = SLK / 1000; // SLK (mm) -> m 변환
-                
-                const H_K_Calc = term1 * term2 * term3 * L7 * SG * NNN;
-                
-                // 원본 코드: Fix((HK * 10 + 0.5) / 10) -> 1자리 반올림
-                HK = Math.round(H_K_Calc * 10) / 10;
+                if (D1 === 0) { // D1이 0일 때 오류 방지
+                     HK = 0;
+                } else {
+                    // HK = 2 * (DK / D1)^2 * (SK / 60)^2 * SLK * L7 * SG * NNN
+                    const term1 = 2 * Math.pow(DK / D1, 2);
+                    const term2 = Math.pow(SK / 60, 2);
+                    const term3 = SLK / 1000; // SLK (mm) -> m 변환
+                    
+                    const H_K_Calc = term1 * term2 * term3 * L7 * SG * NNN;
+                    
+                    // 원본 코드: Fix((HK * 10 + 0.5) / 10) -> 1자리 반올림
+                    HK = Math.round(H_K_Calc * 10) / 10;
+                }
             }
             
             // 결과 업데이트
