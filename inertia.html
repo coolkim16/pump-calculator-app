@@ -4,461 +4,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>관성저항 (마찰손실 수두) 계산기</title>
+<title>펌프 시스템 계산기</title>
+<script src="https://www.google.com/search?q=https://cdn.tailwindcss.com"></script>
+<link href="https://www.google.com/search?q=https://fonts.googleapis.com/css2%3Ffamily%3DNoto%2BSans%2BKR:wght%40400%3B700%26display%3Dswap" rel="stylesheet">
 
-<!-- [수정] Tailwind CSS 및 폰트 링크를 올바른 CDN 주소로 수정 -->
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- PWA 태그 시작 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3b82f6">
+<link rel="apple-touch-icon" href="cheonsei_logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- PWA 태그 끝 -->
 
 <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    input[type="number"] { -moz-appearance: textfield; }
-    .input-group label { transition: all 0.2s ease; }
+    body { font-family: 'Noto Sans KR', sans-serif; }
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
 </style>
 
 
 </head>
-<body class="p-4 sm:p-8">
+<body class="bg-gray-100 min-h-screen flex flex-col justify-center items-center p-4">
 
-<!-- 메인 화면으로 돌아가기 링크 -->
-<div class="max-w-4xl mx-auto mb-6">
-    <a href="index.html" class="text-blue-600 hover:text-blue-800 transition-colors">
-        &larr; 메인 화면으로 돌아가기
-    </a>
-</div>
-
-<div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-xl p-6 sm:p-10">
-    <header class="mb-8 border-b pb-4">
-        <h1 class="text-3xl font-extrabold text-blue-800">관성저항 (마찰 손실 수두) 계산기</h1>
-        <p class="text-gray-600 mt-2">유체 흐름, 배관 사양 및 부속품 정보를 입력하여 총 손실 수두를 계산합니다. (원천 코드 로직 반영)</p>
+<div class="text-center max-w-2xl mx-auto">
+    
+    <header class="mb-10">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800">펌프 시스템 계산기</h1>
+        <p class="text-lg text-gray-600 mt-3">필요한 계산기를 선택하세요.</p>
     </header>
 
-    <main>
-        <form id="resistanceForm" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Fluid & Flow Data -->
-            <section class="lg:col-span-1 p-5 border border-blue-100 rounded-lg bg-blue-50">
-                <h2 class="text-xl font-bold text-blue-700 mb-4 border-b pb-2">1. 유체 및 유량 정보</h2>
-                <div class="space-y-4">
-                    <div class="input-group">
-                        <label for="QQ" class="block text-sm font-medium text-gray-700 mb-1">유량 (QQ)</label>
-                        <input type="number" id="QQ" name="QQ" value="10" required min="0" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="input-group">
-                        <label for="C" class="block text-sm font-medium text-gray-700 mb-1">유량 단위 (C)</label>
-                        <select id="C" name="C" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1" selected>ℓ/min</option>
-                            <option value="2">㎥/h</option>
-                            <option value="3">㎥/min</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="SG" class="block text-sm font-medium text-gray-700 mb-1">비중 (SG)</label>
-                        <input type="number" id="SG" name="SG" value="1.0" required min="0.1" step="0.01" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="input-group">
-                        <label for="CP_value" class="block text-sm font-medium text-gray-700 mb-1">점도 값 (CP)</label>
-                        <input type="number" id="CP_value" name="CP_value" value="1" required min="0" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="input-group">
-                        <label for="AA" class="block text-sm font-medium text-gray-700 mb-1">점도 단위 (AA)</label>
-                        <select id="AA" name="AA" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1" selected>cP (Centipoise)</option>
-                            <option value="2">cSt (Centistokes)</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Pipe & Static Data -->
-            <section class="lg:col-span-1 p-5 border border-blue-100 rounded-lg bg-blue-50">
-                <h2 class="text-xl font-bold text-blue-700 mb-4 border-b pb-2">2. 배관 및 정수두 정보</h2>
-                <div class="space-y-4">
-                    <div class="input-group">
-                        <label for="D1" class="block text-sm font-medium text-gray-700 mb-1">배관 내경 (D1, mm)</label>
-                        <select id="D1" name="D1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="10">10 mm</option>
-                            <option value="15">15 mm</option>
-                            <option value="20">20 mm</option>
-                            <option value="25" selected>25 mm</option>
-                            <option value="32">32 mm</option>
-                            <option value="40">40 mm</option>
-                            <option value="50">50 mm</option>
-                            <option value="65">65 mm</option>
-                            <option value="75">75 mm</option>
-                            <option value="80">80 mm</option>
-                            <option value="100">100 mm</option>
-                            <option value="125">125 mm</option>
-                            <option value="150">150 mm</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="L7" class="block text-sm font-medium text-gray-700 mb-1">직관 길이 (L7, m)</label>
-                        <input type="number" id="L7" name="L7" value="100" required min="0" step="1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="input-group">
-                        <label for="Z" class="block text-sm font-medium text-gray-700 mb-1">정수두/높이차 (Z, m)</label>
-                        <input type="number" id="Z" name="Z" value="0" required step="0.1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold text-blue-700 mb-2">펌프 타입 (KK/NN)</h3>
-                    <div class="input-group">
-                        <label for="KK" class="block text-sm font-medium text-gray-700 mb-1">주요 펌프 타입 (KK)</label>
-                        <select id="KK" name="KK" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1" selected>모노펌프</option>
-                            <option value="2">원심펌프</option>
-                            <option value="3">정량펌프</option>
-                        </select>
-                    </div>
-                    <div class="input-group mt-2">
-                        <label for="NN" class="block text-sm font-medium text-gray-700 mb-1">정량펌프 세부 타입 (NN)</label>
-                        <select id="NN" name="NN" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1" selected>싱글헤드</option>
-                            <option value="2">더블헤드</option>
-                            <option value="3">트리플헤드</option>
-                            <option value="4">무맥동정량펌프</option>
-                        </select>
-                    </div>
-
-                    <!-- Dosing Pump Specific Inputs (Conditional) -->
-                    <div id="dosingInputs" class="mt-6 space-y-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg hidden">
-                         <h3 class="text-md font-semibold text-yellow-700">정량펌프 상세 입력</h3>
-                        <div class="input-group">
-                            <label for="DK" class="text-sm font-medium text-gray-700">다이어프램 유효직경 (DK, mm)</label>
-                            <input type="number" id="DK" name="DK" value="20" min="1" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div class="input-group">
-                            <label for="SK" class="text-sm font-medium text-gray-700">스트로크 수 (SK, strokes/min)</label>
-                            <input type="number" id="SK" name="SK" value="50" min="1" class="w-full p-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div class="input-group">
-                            <label for="SLK" class="text-sm font-medium text-gray-700">스트로크 길이 (SLK, mm)</label>
-                            <input type="number" id="SLK" name="SLK" value="10" min="1" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Fittings Data (A1-A6) -->
-            <section class="lg:col-span-1 p-5 border border-blue-100 rounded-lg bg-blue-50">
-                <h2 class="text-xl font-bold text-blue-700 mb-4 border-b pb-2">3. 배관 부속품 개수</h2>
-                <p class="text-sm text-gray-500 mb-4">각 부속품의 개수를 입력해주세요.</p>
-                <div class="space-y-3">
-                    <div class="input-group">
-                        <label for="A1" class="text-sm font-medium text-gray-700">A1: 90° 표준 엘보우 (개)</label>
-                        <input type="number" id="A1" name="A1" value="5" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div class="input-group">
-                        <label for="A2" class="text-sm font-medium text-gray-700">A2: 45° 표준 엘보우 (개)</label>
-                        <input type="number" id="A2" name="A2" value="2" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div class="input-group">
-                        <label for="A3" class="text-sm font-medium text-gray-700">A3: 게이트 밸브 (완전 개방) (개)</label>
-                        <input type="number" id="A3" name="A3" value="1" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div class="input-group">
-                        <label for="A4" class="text-sm font-medium text-gray-700">A4: 스윙 체크 밸브 (개)</label>
-                        <input type="number" id="A4" name="A4" value="0" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div class="input-group">
-                        <label for="A5" class="text-sm font-medium text-gray-700">A5: 글로브 밸브 (표준) (개)</label>
-                        <input type="number" id="A5" name="A5" value="0" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div class="input-group">
-                        <label for="A6" class="text-sm font-medium text-gray-700">A6: 여과기/풋 밸브 (개)</label>
-                        <input type="number" id="A6" name="A6" value="0" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                </div>
-            </section>
-        </form>
-
-        <!-- Results Section -->
-        <section class="mt-10 p-6 bg-white border border-gray-200 rounded-xl shadow-lg lg:col-span-3">
-            <h2 class="text-2xl font-extrabold text-red-600 mb-6 border-b pb-3">4. 계산 결과</h2>
-            <div id="resultsDisplay" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-800">최종 총 손실 수두 (H)</h3>
-                    <p id="result_H" class="text-4xl font-extrabold text-red-700 mt-1">0.0 m</p>
-                    <p class="text-sm text-gray-500 mt-2">관성저항 및 정수두를 포함한 총 수두 (비중 보정)</p>
-                </div>
-
-                <div id="HK_result_container" class="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg shadow hidden">
-                    <h3 class="text-lg font-semibold text-gray-800">정량펌프 부가 손실 수두 (HK)</h3>
-                    <p id="result_HK" class="text-3xl font-bold text-yellow-700 mt-1">0.0 m</p>
-                    <p class="text-sm text-gray-500 mt-2">정량펌프 사양에 따른 부가 손실 수두</p>
-                </div>
-
-                <div class="p-4 bg-gray-50 border-l-4 border-gray-400 rounded-r-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-800">총 등가 직관 길이 (L)</h3>
-                    <p id="result_L" class="text-3xl font-bold text-gray-700 mt-1">0.0 m</p>
-                    <p class="text-sm text-gray-500 mt-2">직관 및 모든 부속품의 등가 길이 합산</p>
-                </div>
-
-                <div class="col-span-1 md:col-span-2 mt-4">
-                    <h3 class="text-xl font-bold text-blue-700 mb-3">중간 계산 상세</h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                        <div class="bg-gray-100 p-3 rounded-lg"><span class="font-medium text-gray-600">유속 (V, m/s):</span> <span id="result_V" class="block font-bold mt-1">0.0</span></div>
-                        <div class="bg-gray-100 p-3 rounded-lg"><span class="font-medium text-gray-600">레이놀즈 수 (RE):</span> <span id="result_RE" class="block font-bold mt-1">0</span></div>
-                        <div class="bg-gray-100 p-3 rounded-lg"><span class="font-medium text-gray-600">마찰 계수 (K/f):</span> <span id="result_K" class="block font-bold mt-1">0.0</span></div>
-                        <div class="bg-gray-100 p-3 rounded-lg"><span class="font-medium text-gray-600">배관 내경 (D, m):</span> <span id="result_D" class="block font-bold mt-1">0.0</span></div>
-                    </div>
-                </div>
+    <main class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        <!-- 배관저항 계산 -->
+        <a href="inertia.html" class="card bg-white p-8 rounded-xl shadow-md flex flex-col items-center text-center border border-gray-200">
+            <div class="p-4 bg-blue-100 rounded-full mb-4">
+                <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             </div>
-        </section>
+            <h2 class="text-xl font-semibold text-gray-700">배관저항(관성,마찰) 계산</h2>
+            <p class="text-gray-500 mt-2">배관 및 부속품의 총 손실 수두를 계산합니다.</p>
+        </a>
+
+        <!-- NPSHA 계산 -->
+        <a href="npsha.html" class="card bg-white p-8 rounded-xl shadow-md flex flex-col items-center text-center border border-gray-200">
+            <div class="p-4 bg-green-100 rounded-full mb-4">
+                <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-700">NPSHA 계산</h2>
+            <p class="text-gray-500 mt-2">펌프의 유효 흡입 수두를 계산하여 캐비테이션을 방지합니다.</p>
+        </a>
     </main>
+
+    <footer class="mt-12">
+        <img src="cheonsei_logo.png" alt="기업 로고" class="h-16 w-auto mx-auto">
+    </footer>
+
 </div>
 
+<!-- 서비스 워커 등록 스크립트 -->
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('resistanceForm');
-        const inputs = form.querySelectorAll('input, select');
-        const KKInput = document.getElementById('KK');
-        const NNInput = document.getElementById('NN');
-        const dosingInputsDiv = document.getElementById('dosingInputs');
-        const HKResultContainer = document.getElementById('HK_result_container');
-
-        // K 값 (L/D ratio) 테이블 - D1 (mm) 기준
-        const K_VALUES = {
-            // A1: 90도 표준 엘보우
-            K1: { 10: 36, 15: 30, 20: 29, 25: 28, 32: 27, 40: 26, 50: 26, 65: 28, default: 25 },
-            // A2: 45도 표준 엘보우
-            K2: { 10: 20, 15: 17.5, 20: 16.5, 25: 16, 35: 15.5, 40: 15.5, default: 15 },
-            // A3: 게이트 밸브 (완전 개방)
-            K3: { 10: 96, 15: 80, 20: 75, 25: 71, 32: 70, 40: 68, 50: 68, 65: 67, 75: 68, 80: 67, 100: 67, 125: 66, default: 65 },
-            // A4: 스윙 체크 밸브
-            K4: { 10: 9.2, 15: 8, 20: 7.7, 25: 7.5, 32: 7.2, 40: 7, 50: 7, 65: 6.9, 75: 6.9, 80: 6.8, 100: 6.8, 125: 6.7, default: 6.5 },
-            // A5: 글로브 밸브 (표준)
-            K5: { 10: 265, 15: 220, 20: 200, 25: 190, 32: 180, 40: 175, range: { min: 50, max: 125, val: 170 }, default: 165 },
-            // A6: 여과기/풋 밸브
-            K6: { 10: 500, 15: 400, 20: 370, 25: 360, 32: 350, 40: 340, default: 330 },
-        };
-
-        // 모든 입력 값이 변경될 때마다 계산 함수 실행
-        inputs.forEach(input => {
-            input.addEventListener('input', () => {
-                toggleDosingInputs();
-                calculateInertiaResistance();
-            });
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker 등록 성공: ', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker 등록 실패: ', error);
+                });
         });
-
-        // 펌프 타입에 따라 추가 입력 필드를 보여주거나 숨기는 함수
-        function toggleDosingInputs() {
-            const KK_val = parseInt(KKInput.value);
-            if (KK_val === 3) {
-                dosingInputsDiv.classList.remove('hidden');
-                HKResultContainer.classList.remove('hidden');
-            } else {
-                dosingInputsDiv.classList.add('hidden');
-                HKResultContainer.classList.add('hidden');
-            }
-        }
-
-        // 초기 실행
-        toggleDosingInputs();
-        calculateInertiaResistance();
-
-        /**
-         * D1 값에 따라 K 값을 조회합니다.
-         * @param {number} D1 - 파이프 내경 (mm)
-         * @param {object} K_data - 해당 부속품의 K 값 데이터 (K1~K6)
-         * @returns {number} K 값 (L/D Ratio)
-         */
-        function getKValue(D1, K_data) {
-            const D1_str = D1.toString();
-            
-            // 1. D1이 명확히 정의된 경우
-            if (K_data.hasOwnProperty(D1_str)) {
-                return K_data[D1_str];
-            }
-            
-            // 2. A5 (Globe Valve)처럼 범위로 정의된 경우
-            if (K_data.hasOwnProperty('range')) {
-                const range = K_data.range;
-                if (D1 >= range.min && D1 <= range.max) {
-                    return range.val;
-                }
-            }
-
-            // 3. D1이 default 범위 (if D1 >= X then K)에 해당하는 경우
-            const D1_num = parseInt(D1, 10);
-
-            // K1: D1 >= 75
-            if (K_data === K_VALUES.K1 && D1_num >= 75) return K_VALUES.K1.default;
-            // K2: D1 >= 50
-            if (K_data === K_VALUES.K2 && D1_num >= 50) return K_VALUES.K2.default;
-            // K3: D1 >= 150
-            if (K_data === K_VALUES.K3 && D1_num >= 150) return K_VALUES.K3.default;
-            // K4: D1 >= 150
-            if (K_data === K_VALUES.K4 && D1_num >= 150) return K_VALUES.K4.default;
-            // K5: D1 >= 150
-            if (K_data === K_VALUES.K5 && D1_num >= 150) return K_VALUES.K5.default;
-            // K6: D1 >= 50
-            if (K_data === K_VALUES.K6 && D1_num >= 50) return K_VALUES.K6.default;
-            
-            // 4. Case에 해당하지 않는 경우 0 또는 기본값 반환
-            // K_data.default는 범위 밖의 값을 처리
-            if(K_data.default) return K_data.default;
-            
-            return 0; // 안전을 위해 0 반환
-        }
-
-        /**
-         * 관성저항(총 손실 수두)을 계산합니다.
-         */
-        function calculateInertiaResistance() {
-            // 1. 입력 값 파싱 및 기본 검증
-            const D1 = parseFloat(document.getElementById('D1').value) || 0; // Pipe diameter (mm)
-            const QQ = parseFloat(document.getElementById('QQ').value) || 0; // Flow rate value
-            const C = parseInt(document.getElementById('C').value) || 1; // Flow unit type
-            const SG = parseFloat(document.getElementById('SG').value) || 1.0; // Specific Gravity
-            const CP_value = parseFloat(document.getElementById('CP_value').value) || 1; // Viscosity value
-            const AA = parseInt(document.getElementById('AA').value) || 1; // Viscosity unit type (1=cP, 2=cSt)
-            const L7 = parseFloat(document.getElementById('L7').value) || 0; // Straight pipe length (m)
-            const Z = parseFloat(document.getElementById('Z').value) || 0; // Static head (m)
-            const KK = parseInt(document.getElementById('KK').value) || 1; // Pump type
-            const NN = parseInt(document.getElementById('NN').value) || 1; // Dosing sub-type
-
-            // 부속품 개수 (입력이 없으면 0으로 처리)
-            const A1 = parseFloat(document.getElementById('A1').value) || 0;
-            const A2 = parseFloat(document.getElementById('A2').value) || 0;
-            const A3 = parseFloat(document.getElementById('A3').value) || 0;
-            const A4 = parseFloat(document.getElementById('A4').value) || 0;
-            const A5 = parseFloat(document.getElementById('A5').value) || 0;
-            const A6 = parseFloat(document.getElementById('A6').value) || 0;
-            
-            // 정량펌프 전용 입력 (입력이 없으면 기본값 사용)
-            const DK = parseFloat(document.getElementById('DK')?.value) || 20; // Diaphragm ID (mm)
-            const SK = parseFloat(document.getElementById('SK')?.value) || 50; // Strokes/min
-            const SLK = parseFloat(document.getElementById('SLK')?.value) || 10; // Stroke Length (mm)
-
-
-            if (D1 <= 0 || SG <= 0) {
-                // 계산 불가
-                updateResults(0, 0, 0, 0, 0, 0, 0);
-                return;
-            }
-
-            // 2. 기본 변수 설정 (KKK/NNN)
-            let KKK = 1;
-            let NNN = 1;
-
-            if (KK === 3) { // 정량펌프
-                switch (NN) {
-                    case 1: KKK = Math.PI; NNN = 1; break; // 싱글헤드
-                    case 2: KKK = Math.PI / 2; NNN = 1; break; // 더블헤드
-                    case 3: KKK = Math.PI / 3; NNN = 0.5; break; // 트리플헤드
-                    case 4: KKK = 1; NNN = 0; break; // 무맥동정량펌프
-                }
-            } else {
-                KKK = 1;
-                NNN = 1;
-            }
-
-            // D는 파이프 내경 (m)
-            const D = D1 / 1000; 
-
-            // 3. 유량 Q (m³/h) 변환
-            let Q;
-            switch (C) {
-                case 1: Q = (QQ * 60) / 1000; break; // ℓ/min -> m³/h
-                case 2: Q = QQ; break; // m³/h -> m³/h
-                case 3: Q = QQ * 60; break; // m³/min -> m³/h
-                default: Q = 0;
-            }
-
-            // 4. 등가 직관 길이 L_eq 및 총 길이 L 계산
-            let L1 = 0, L2 = 0, L3 = 0, L4 = 0, L5 = 0, L6 = 0;
-            let K1 = 0, K2 = 0, K3 = 0, K4 = 0, K5 = 0, K6 = 0;
-
-            if (A1 > 0) { K1 = getKValue(D1, K_VALUES.K1); L1 = D * A1 * K1; }
-            if (A2 > 0) { K2 = getKValue(D1, K_VALUES.K2); L2 = D * A2 * K2; }
-            if (A3 > 0) { K3 = getKValue(D1, K_VALUES.K3); L3 = D * A3 * K3; }
-            if (A4 > 0) { K4 = getKValue(D1, K_VALUES.K4); L4 = D * A4 * K4; }
-            if (A5 > 0) { K5 = getKValue(D1, K_VALUES.K5); L5 = D * A5 * K5; }
-            if (A6 > 0) { K6 = getKValue(D1, K_VALUES.K6); L6 = D * A6 * K6; }
-
-            const L = L1 + L2 + L3 + L4 + L5 + L6 + L7; // 총 등가 직관 길이 (m)
-
-            // 5. 유속 V (m/s) 계산
-            const VVV = (Q * 4 * KKK) / (Math.PI * Math.pow(D, 2) * 3600); // VVV: m/s
-            const V = Math.round(VVV * 10000) / 10000; // 4자리 반올림
-
-            // 6. 동점성 계수 KE (Kinematic Viscosity, m²/s) 계산
-            let KE;
-            if (AA === 1) { // cP (Centipoise)
-                // KE = cP / (SG * 1,000,000)
-                KE = CP_value / (SG * 1000000.00);
-            } else if (AA === 2) { // cSt (Centistokes)
-                // KE = cSt / 1,000,000
-                KE = CP_value / 1000000.00;
-            } else {
-                KE = 0;
-            }
-
-            if (KE <= 0) KE = 0.000001; // 0 방지
-
-            // 7. 레이놀즈 수 RE 계산
-            const RRE = (VVV * D) / KE;
-            const RE = Math.round(RRE * 10000) / 10000; // 4자리 반올림
-
-            // 8. 마찰 계수 K (Darcy-Weisbach friction factor f) 계산
-            let K;
-            if (RE <= 2300) {
-                K = 64 / RE; // 층류 (Laminar Flow)
-            } else {
-                // K = 0.316 / RE^0.25; // 난류 (Turbulent Flow - Blasius)
-                K = 0.316 / Math.pow(RE, 0.25); 
-            }
-            K = Math.round(K * 10000) / 10000; // 4자리 반올림
-            
-            // 9. 총 손실 수두 HH (m) 계산
-            // HH = ( (K * L * V^2) / (D * 2 * 9.8) + Z ) * SG
-            const HH = ( (K * L * Math.pow(VVV, 2)) / (D * 2 * 9.8) + Z ) * SG;
-            
-            // 최종 결과 H (m)는 1자리 반올림
-            const H = Math.round(HH * 10) / 10;
-
-
-            // 10. 정량펌프 부가 손실 수두 HK 계산 (원천 코드 로직 반영)
-            let HK = 0;
-            if (KK === 3 && NNN > 0) {
-                if (D1 === 0) { // D1이 0일 때 오류 방지
-                     HK = 0;
-                } else {
-                    // HK = 2 * (DK / D1)^2 * (SK / 60)^2 * SLK * L7 * SG * NNN
-                    const term1 = 2 * Math.pow(DK / D1, 2);
-                    const term2 = Math.pow(SK / 60, 2);
-                    const term3 = SLK / 1000; // SLK (mm) -> m 변환
-                    
-                    const H_K_Calc = term1 * term2 * term3 * L7 * SG * NNN;
-                    
-                    // 원본 코드: Fix((HK * 10 + 0.5) / 10) -> 1자리 반올림
-                    HK = Math.round(H_K_Calc * 10) / 10;
-                }
-            }
-            
-            // 결과 업데이트
-            updateResults(H, L, V, RE, K, D, HK);
-        }
-
-        /**
-         * 계산 결과를 UI에 표시합니다.
-         */
-        function updateResults(H, L, V, RE, K, D, HK) {
-            document.getElementById('result_H').textContent = `${H.toFixed(1)} m`;
-            document.getElementById('result_L').textContent = `${L.toFixed(2)} m`;
-            document.getElementById('result_V').textContent = V.toFixed(4);
-            document.getElementById('result_RE').textContent = RE.toFixed(0);
-            document.getElementById('result_K').textContent = K.toFixed(4);
-            document.getElementById('result_D').textContent = D.toFixed(4);
-            
-            if (document.getElementById('result_HK')) {
-                document.getElementById('result_HK').textContent = `${HK.toFixed(1)} m`;
-            }
-        }
-    });
+    }
 </script>
 
 
