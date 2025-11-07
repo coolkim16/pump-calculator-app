@@ -1,6 +1,6 @@
-const CACHE_NAME = 'pump-calculator-v1';
+const CACHE_NAME = 'pump-calculator-v2'; // 캐시 버전을 v2로 변경
 
-// [수정] 캐시할 목록의 CDN 주소를 올바르게 수정
+// [수정] 캐시할 목록의 CDN 주소를 올바른 실제 주소로 수정
 const URLS_TO_CACHE = [
 './',
 './index.html',
@@ -19,7 +19,6 @@ event.waitUntil(
 caches.open(CACHE_NAME)
 .then(cache => {
 console.log('캐시 열림, 핵심 파일 저장 중...');
-// addAll은 하나라도 실패하면 전체가 실패함
 return cache.addAll(URLS_TO_CACHE).catch(err => {
 console.error('캐시 저장 실패:', err);
 });
@@ -50,7 +49,6 @@ return response;
 
         caches.open(CACHE_NAME)
           .then(cache => {
-              // PUT 요청은 캐시하지 않음 (필요시)
               if(event.request.method !== 'PUT') {
                 cache.put(event.request, responseToCache);
               }
@@ -60,7 +58,6 @@ return response;
       }
     ).catch(() => {
       console.log('네트워크 요청 실패 및 캐시에 없음');
-      // (오프라인일 때 캐시에 없는 파일을 요청하면 여기서 실패함)
     });
   })
 
@@ -68,15 +65,15 @@ return response;
 );
 });
 
-// 3. 오래된 캐시 정리 (Activate)
+// 3. 오래된 캐시 정리 (Activate) - v1 캐시 삭제
 self.addEventListener('activate', event => {
-const cacheWhitelist = [CACHE_NAME];
+const cacheWhitelist = [CACHE_NAME]; // v2만 허용
 event.waitUntil(
 caches.keys().then(cacheNames => {
 return Promise.all(
 cacheNames.map(cacheName => {
 if (cacheWhitelist.indexOf(cacheName) === -1) {
-// 이 캐시 이름이 화이트리스트에 없으면 삭제
+// 이 캐시 이름(v1)이 화이트리스트에 없으면 삭제
 return caches.delete(cacheName);
 }
 })
