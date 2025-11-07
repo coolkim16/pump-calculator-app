@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>펌프 시스템 계산기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="max-w-xl mx-auto bg-white shadow-2xl rounded-xl p-10 text-center">
+        <header class="mb-10 border-b pb-6">
+            <h1 class="text-4xl font-extrabold text-blue-800">펌프 시스템 계산기</h1>
+            <p class="text-gray-600 mt-3 text-lg">수행할 계산을 선택하세요.</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- 1. 배관저항(관성,마찰) 계산기 링크 (텍스트 수정됨) -->
+            <a href="inertia.html" 
+               class="block p-8 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition-all duration-300 transform hover:-translate-y-1">
+                <h2 class="text-2xl font-bold mb-2">배관저항(관성,마찰) 계산</h2>
+                <p class="text-blue-100">배관의 마찰 손실 수두(H) 및 등가 직관 길이(L)를 계산합니다.</p>
+            </a>
+
+            <!-- 2. NPSHA 계산기 링크 -->
+            <a href="npsha.html" 
+               class="block p-8 bg-green-500 text-white rounded-lg shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:-translate-y-1">
+                <h2 class="text-2xl font-bold mb-2">NPSHA (유효 흡입 수두) 계산</h2>
+                <p class="text-green-100">펌프의 캐비테이션 방지를 위한 유효 흡입 수두(NPSHA)를 계산합니다.</p>
+            </a>
+        </main>
+
+        <!-- 3. 푸터: 저작권 문구 제거 및 로고 삽입 -->
+        <footer class="mt-10">
+            <img src="cheonsei_logo.png" alt="천세(주) 로고" class="mx-auto max-h-20 w-auto">
+        </footer>
+    </div>
+</body>
+</html>
