@@ -5,10 +5,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NPSHA (유효 흡입 수두) 계산기</title>
+<script src="https://www.google.com/search?q=https://cdn.tailwindcss.com"></script>
+<link href="https://www.google.com/search?q=https://fonts.googleapis.com/css2%3Ffamily%3DInter:wght%40400%3B500%3B600%3B700%26display%3Dswap" rel="stylesheet">
 
-<!-- [수정] Tailwind CSS 및 폰트 링크를 올바른 CDN 주소로 수정 -->
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- PWA 태그 시작 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#10B981">
+<link rel="apple-touch-icon" href="cheonsei_logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- PWA 태그 끝 -->
 
 <style>
     body { font-family: 'Inter', sans-serif; }
@@ -214,7 +220,20 @@
     </div>
 </div>
 
+<!-- 서비스 워커 등록 스크립트 -->
 <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker 등록 성공: ', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker 등록 실패: ', error);
+                });
+        });
+    }
+
     // 전역 상수 선언 (오류 방지를 위해 var 사용)
     var G = 9.8; // 중력가속도 (m/s^2)
     var H_CONST = 10.197; // 1 bar 를 mH2O (물 수두)로 변환하는 상수
