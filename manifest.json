@@ -1,0 +1,21 @@
+{
+  "name": "펌프 시스템 계산기",
+  "short_name": "펌프 계산기",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "description": "배관저항 및 NPSHA 계산기",
+  "icons": [
+    {
+      "src": "cheonsei_logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "cheonsei_logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
