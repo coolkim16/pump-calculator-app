@@ -51,7 +51,7 @@
                 <div class="space-y-4">
                     <div class="input-group">
                         <label for="QQ" class="block text-sm font-medium text-gray-700 mb-1">유량 (QQ)</label>
-                        <input type="number" id="QQ" name="QQ" value="10" required min="0" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <input type="number" id="QQ" name="QQ" value="1" required min="0" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div class="input-group">
                         <label for="C" class="block text-sm font-medium text-gray-700 mb-1">유량 단위 (C)</label>
@@ -87,9 +87,9 @@
                         <label for="D1" class="block text-sm font-medium text-gray-700 mb-1">배관 내경 (D1, mm)</label>
                         <select id="D1" name="D1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                             <option value="10">10 mm</option>
-                            <option value="15">15 mm</option>
+                            <option value="15" selected>15 mm</option>
                             <option value="20">20 mm</option>
-                            <option value="25" selected>25 mm</option>
+                            <option value="25">25 mm</option>
                             <option value="32">32 mm</option>
                             <option value="40">40 mm</option>
                             <option value="50">50 mm</option>
@@ -103,11 +103,11 @@
                     </div>
                     <div class="input-group">
                         <label for="L7" class="block text-sm font-medium text-gray-700 mb-1">직관 길이 (L7, m)</label>
-                        <input type="number" id="L7" name="L7" value="100" required min="0" step="1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <input type="number" id="L7" name="L7" value="10" required min="0" step="1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div class="input-group">
                         <label for="Z" class="block text-sm font-medium text-gray-700 mb-1">정수두/높이차 (Z, m)</label>
-                        <input type="number" id="Z" name="Z" value="0" required step="0.1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <input type="number" id="Z" name="Z" value="1" required step="0.1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
                 <div class="mt-6">
@@ -115,9 +115,9 @@
                     <div class="input-group">
                         <label for="KK" class="block text-sm font-medium text-gray-700 mb-1">주요 펌프 타입 (KK)</label>
                         <select id="KK" name="KK" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1" selected>모노펌프</option>
+                            <option value="1">모노펌프</option>
                             <option value="2">원심펌프</option>
-                            <option value="3">정량펌프</option>
+                            <option value="3" selected>정량펌프</option>
                         </select>
                     </div>
                     <div class="input-group mt-2">
@@ -135,15 +135,15 @@
                          <h3 class="text-md font-semibold text-yellow-700">정량펌프 상세 입력</h3>
                         <div class="input-group">
                             <label for="DK" class="text-sm font-medium text-gray-700">다이어프램 유효직경 (DK, mm)</label>
-                            <input type="number" id="DK" name="DK" value="20" min="1" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <input type="number" id="DK" name="DK" value="110" min="1" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                         <div class="input-group">
                             <label for="SK" class="text-sm font-medium text-gray-700">스트로크 수 (SK, strokes/min)</label>
-                            <input type="number" id="SK" name="SK" value="50" min="1" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <input type="number" id="SK" name="SK" value="87" min="1" class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                         <div class="input-group">
                             <label for="SLK" class="text-sm font-medium text-gray-700">스트로크 길이 (SLK, mm)</label>
-                            <input type="number" id="SLK" name="SLK" value="10" min="1" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <input type="number" id="SLK" name="SLK" value="15" min="1" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                     </div>
                 </div>
@@ -156,15 +156,15 @@
                 <div class="space-y-3">
                     <div class="input-group">
                         <label for="A1" class="text-sm font-medium text-gray-700">A1: 90° 표준 엘보우 (개)</label>
-                        <input type="number" id="A1" name="A1" value="5" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <input type="number" id="A1" name="A1" value="0" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div class="input-group">
                         <label for="A2" class="text-sm font-medium text-gray-700">A2: 45° 표준 엘보우 (개)</label>
-                        <input type="number" id="A2" name="A2" value="2" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <input type="number" id="A2" name="A2" value="0" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div class="input-group">
                         <label for="A3" class="text-sm font-medium text-gray-700">A3: 게이트 밸브 (완전 개방) (개)</label>
-                        <input type="number" id="A3" name="A3" value="1" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <input type="number" id="A3" name="A3" value="0" min="0" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div class="input-group">
                         <label for="A4" class="text-sm font-medium text-gray-700">A4: 스윙 체크 밸브 (개)</label>
